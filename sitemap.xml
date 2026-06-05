@@ -1,0 +1,5 @@
+<?php
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/includes/seo.php';
+header('Content-Type: application/xml; charset=utf-8');
+echo SEO::generateSitemap();

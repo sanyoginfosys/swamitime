@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /includes/
+Disallow: /config.php
+Disallow: /*.sql
+Disallow: /*.md
+
+Sitemap: https://swamitime.com/sitemap.xml
