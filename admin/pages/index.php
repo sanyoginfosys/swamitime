@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         set_flash('success', 'Page deleted.');
     }
 
-    redirect(admin_url('pages/'));
+    redirect(admin_url('pages.php'));
 }
 
 // --- Query ---

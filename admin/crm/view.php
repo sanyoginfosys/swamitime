@@ -7,12 +7,12 @@ Auth::requireLogin();
 
 $db = getDB();
 $leadId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-if (!$leadId) { set_flash('error', 'Invalid lead ID.'); redirect(admin_url('crm/')); }
+if (!$leadId) { set_flash('error', 'Invalid lead ID.');     redirect(admin_url('crm-leads.php')); }
 
 $stmt = $db->prepare("SELECT l.*, a.full_name as assigned_name FROM crm_leads l LEFT JOIN admins a ON l.assigned_user_id = a.id WHERE l.id = ?");
 $stmt->execute([$leadId]);
 $lead = $stmt->fetch();
-if (!$lead) { set_flash('error', 'Lead not found.'); redirect(admin_url('crm/')); }
+if (!$lead) { set_flash('error', 'Lead not found.');     redirect(admin_url('crm-leads.php')); }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     Security::validate_csrf();

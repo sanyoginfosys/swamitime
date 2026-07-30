@@ -18,7 +18,7 @@ if ($editId) {
     $stmt = $db->prepare("SELECT * FROM blog_posts WHERE id = ?");
     $stmt->execute([$editId]);
     $post = $stmt->fetch();
-    if (!$post) { set_flash('error', 'Post not found.'); redirect(admin_url('blog/')); }
+    if (!$post) { set_flash('error', 'Post not found.'); redirect(admin_url('blog-posts.php')); }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

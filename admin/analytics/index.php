@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db->prepare("UPDATE analytics_settings SET google_analytics_id=?, google_tag_manager_id=?, google_search_console_meta=?, meta_pixel_id=?, linkedin_insight_tag=?, custom_header_scripts=?, custom_footer_scripts=?, updated_at=NOW() WHERE id=1")
         ->execute([$ga, $gtm, $gsc, $pixel, $linkedin, $headerScripts, $footerScripts]);
     set_flash('success', 'Analytics settings saved.');
-    redirect(admin_url('analytics/'));
+    redirect(admin_url('analytics.php'));
 }
 
 $settings = $db->query("SELECT * FROM analytics_settings WHERE id=1")->fetch();

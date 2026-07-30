@@ -27,7 +27,7 @@ if (!$isNew) {
         $serviceData = $row;
     } else {
         set_flash('error', 'Service not found.');
-        redirect(admin_url('services/'));
+        redirect(admin_url('services.php'));
     }
 }
 

@@ -64,7 +64,7 @@ if (empty($industries)) {
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<?php echo ($industry['id'] % 3) * 100; ?>">
                 <div class="industry-card">
                     <div class="icon-circle">
-                        <i class="bi <?php echo htmlspecialchars($industry['icon']); ?>"></i>
+                        <i class="<?php echo htmlspecialchars($industry['icon']); ?>"></i>
                     </div>
                     <h4><?php echo htmlspecialchars($industry['title']); ?></h4>
                     <p><?php echo htmlspecialchars($industry['description']); ?></p>

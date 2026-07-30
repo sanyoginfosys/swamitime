@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($uploaded > 0) {
                 set_flash('success', $uploaded . ' file(s) uploaded successfully.');
             }
-            redirect(admin_url('media/'));
+            redirect(admin_url('media.php'));
         }
     } elseif ($action === 'update_alt') {
         $id      = (int) ($_POST['id'] ?? 0);
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $db->prepare('UPDATE media_library SET alt_text = ? WHERE id = ?');
         $stmt->execute([$altText, $id]);
         set_flash('success', 'Alt text updated.');
-        redirect(admin_url('media/'));
+        redirect(admin_url('media.php'));
     } elseif ($action === 'delete') {
         $id = (int) ($_POST['id'] ?? 0);
         $stmt = $db->prepare('SELECT file_path FROM media_library WHERE id = ?');
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $db->prepare('DELETE FROM media_library WHERE id = ?');
         $stmt->execute([$id]);
         set_flash('success', 'File deleted.');
-        redirect(admin_url('media/'));
+        redirect(admin_url('media.php'));
     }
 }
 
@@ -208,7 +208,7 @@ $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
         </div>
         <div class="modal-body">
           <div class="upload-zone border border-2 border-dashed rounded p-5 text-center bg-light" id="dropZone">
-            <i class="fa-solid fa-cloud-arrow-up fa-3x text-muted mb-3"></i>
+            <i class="bi bi-cloud-upload fs-1 text-muted mb-3"></i>
             <p class="mb-2">Drag and drop files here or click to browse</p>
             <p class="text-muted small mb-0">Supported: JPG, PNG, GIF, WebP, SVG, PDF, DOC, DOCX, XLS, XLSX, CSV, TXT, ZIP (Max 10 MB each)</p>
             <input type="file" id="fileInput" name="files[]" class="form-control mt-3" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.zip">

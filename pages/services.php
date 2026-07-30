@@ -68,7 +68,7 @@ if (empty($services)) {
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<?php echo ($service['id'] % 3) * 100; ?>">
                 <div class="service-card">
                     <div class="service-card-icon">
-                        <i class="bi <?php echo htmlspecialchars($service['icon']); ?>"></i>
+                        <i class="<?php echo htmlspecialchars($service['icon']); ?>"></i>
                     </div>
                     <h3><?php echo htmlspecialchars($service['title']); ?></h3>
                     <p><?php echo htmlspecialchars($service['description']); ?></p>

@@ -1,4 +1,9 @@
 <?php
+if (!defined('ADMIN_SERVICES')) {
+    $qs = $_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '';
+    header('Location: ' . dirname(dirname($_SERVER['SCRIPT_NAME'])) . '/services.php' . $qs);
+    exit;
+}
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../includes/functions.php';
 require_once __DIR__ . '/../../includes/auth.php';
@@ -26,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         set_flash('success', 'Service deleted.');
     }
 
-    redirect(admin_url('services/'));
+    redirect(admin_url('services.php'));
 }
 
 $countStmt = $db->query('SELECT COUNT(*) FROM services');

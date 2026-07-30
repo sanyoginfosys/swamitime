@@ -74,7 +74,7 @@ if (empty($caseStudies)) {
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<?php echo $index * 100; ?>">
                 <div class="case-study-card">
                     <div class="case-study-img">
-                        <i class="bi <?php echo htmlspecialchars($case['icon'] ?? 'bi-briefcase', ENT_QUOTES, 'UTF-8'); ?>" style="font-size: 3rem; position: relative; z-index: 1; opacity: 0.9;"></i>
+                        <i class="<?php echo htmlspecialchars($case['icon'] ?? 'fa-solid fa-briefcase', ENT_QUOTES, 'UTF-8'); ?>" style="font-size: 3rem; position: relative; z-index: 1; opacity: 0.9;"></i>
                     </div>
                     <div class="case-study-body">
                         <span class="industry-tag"><?php echo htmlspecialchars($case['industry'], ENT_QUOTES, 'UTF-8'); ?></span>

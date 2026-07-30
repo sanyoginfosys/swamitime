@@ -20,37 +20,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'site_tagline' => sanitize($_POST['site_tagline'] ?? ''),
         'site_description' => sanitize($_POST['site_description'] ?? ''),
         'site_url' => sanitize($_POST['site_url'] ?? ''),
-        'admin_email' => sanitize($_POST['admin_email'] ?? ''),
-        'phone' => sanitize($_POST['phone'] ?? ''),
-        'address' => sanitize($_POST['address'] ?? ''),
+        'site_email' => sanitize($_POST['site_email'] ?? ''),
+        'site_phone' => sanitize($_POST['site_phone'] ?? ''),
+        'site_address' => sanitize($_POST['site_address'] ?? ''),
         'working_hours' => sanitize($_POST['working_hours'] ?? ''),
         'social_facebook' => sanitize($_POST['social_facebook'] ?? ''),
         'social_linkedin' => sanitize($_POST['social_linkedin'] ?? ''),
         'social_twitter' => sanitize($_POST['social_twitter'] ?? ''),
         'footer_disclaimer' => $_POST['footer_disclaimer'] ?? '',
         'cookie_consent_text' => $_POST['cookie_consent_text'] ?? '',
+        'hp_section_hero'       => $_POST['hp_section_hero'] ?? '0',
+        'hp_section_metrics'    => $_POST['hp_section_metrics'] ?? '0',
+        'hp_section_services'   => $_POST['hp_section_services'] ?? '0',
+        'hp_section_workforce'  => $_POST['hp_section_workforce'] ?? '0',
+        'hp_section_ai'         => $_POST['hp_section_ai'] ?? '0',
+        'hp_section_process'    => $_POST['hp_section_process'] ?? '0',
+        'hp_section_industries' => $_POST['hp_section_industries'] ?? '0',
+        'hp_section_case_studies' => $_POST['hp_section_case_studies'] ?? '0',
+        'hp_section_why_choose' => $_POST['hp_section_why_choose'] ?? '0',
+        'hp_section_blog'       => $_POST['hp_section_blog'] ?? '0',
+        'hp_section_cta'        => $_POST['hp_section_cta'] ?? '0',
+        'hp_section_faq'        => $_POST['hp_section_faq'] ?? '0',
     ];
 
     $logoPath = sanitize($_POST['existing_logo'] ?? '');
+    $logoUploaded = false;
     if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
         $upload = upload_file($_FILES['logo'], 'uploads', ['jpg','jpeg','png','gif','webp','svg','ico'], MAX_UPLOAD_SIZE);
-        if ($upload['success']) $logoPath = $upload['path'];
+        if ($upload['success']) { $logoPath = $upload['path']; $logoUploaded = true; }
     }
-    $settings['logo_path'] = $logoPath;
+    if ($logoUploaded) $settings['logo_path'] = $logoPath;
 
     $faviconPath = sanitize($_POST['existing_favicon'] ?? '');
+    $faviconUploaded = false;
     if (isset($_FILES['favicon']) && $_FILES['favicon']['error'] === UPLOAD_ERR_OK) {
         $upload = upload_file($_FILES['favicon'], 'uploads', ['jpg','jpeg','png','ico','svg'], MAX_UPLOAD_SIZE);
-        if ($upload['success']) $faviconPath = $upload['path'];
+        if ($upload['success']) { $faviconPath = $upload['path']; $faviconUploaded = true; }
     }
-    $settings['favicon_path'] = $faviconPath;
+    if ($faviconUploaded) $settings['favicon_path'] = $faviconPath;
 
     $recaptchaSite = sanitize($_POST['recaptcha_site_key'] ?? '');
     $recaptchaSecret = sanitize($_POST['recaptcha_secret_key'] ?? '');
     $settings['recaptcha_site_key'] = $recaptchaSite;
     $settings['recaptcha_secret_key'] = $recaptchaSecret;
 
+    // Detect which form was submitted
+    $isHomepageForm = false;
     foreach ($settings as $key => $value) {
+        if (str_starts_with($key, 'hp_section_') && array_key_exists($key, $_POST)) {
+            $isHomepageForm = true;
+            break;
+        }
+    }
+
+    foreach ($settings as $key => $value) {
+        // Only save settings that were actually submitted in this form
+        $isFile = in_array($key, ['logo_path', 'favicon_path'], true);
+        $isPost  = array_key_exists($key, $_POST);
+        $isHp    = $isHomepageForm && str_starts_with($key, 'hp_section_');
+        if (!$isFile && !$isPost && !$isHp) continue;
+
         $existing = $db->prepare("SELECT id FROM site_settings WHERE setting_key=?");
         $existing->execute([$key]);
         if ($existing->fetch()) {
@@ -96,16 +125,16 @@ require_once __DIR__ . '/../includes/header.php';
                             <textarea name="site_description" class="form-control" rows="3"><?php echo htmlspecialchars($settings['site_description'] ?? ''); ?></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Admin Email</label>
-                            <input type="email" name="admin_email" class="form-control" value="<?php echo htmlspecialchars($settings['admin_email'] ?? ''); ?>">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="site_email" class="form-control" value="<?php echo htmlspecialchars($settings['site_email'] ?? ''); ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Phone Number</label>
-                            <input type="text" name="phone" class="form-control" value="<?php echo htmlspecialchars($settings['phone'] ?? ''); ?>">
+                            <input type="text" name="site_phone" class="form-control" value="<?php echo htmlspecialchars($settings['site_phone'] ?? ''); ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Address</label>
-                            <textarea name="address" class="form-control" rows="2"><?php echo htmlspecialchars($settings['address'] ?? ''); ?></textarea>
+                            <textarea name="site_address" class="form-control" rows="2"><?php echo htmlspecialchars($settings['site_address'] ?? ''); ?></textarea>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Working Hours</label>
@@ -157,6 +186,44 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                     </div>
                     <button type="submit" class="btn btn-teal mt-3"><i class="bi bi-check-lg me-1"></i>Save</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card form-card mb-4">
+            <div class="card-header"><i class="bi bi-toggles me-2"></i>Homepage Sections</div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">Toggle which sections appear on the homepage. Unchecked sections are hidden.</p>
+                <form method="POST">
+                    <?php echo Security::csrf_field(); ?>
+                    <div class="row g-3">
+                        <?php
+                        $sections = [
+                            'hp_section_hero'        => '🦸 Hero Banner',
+                            'hp_section_metrics'     => '📊 Trust Metrics',
+                            'hp_section_services'    => '🛠️ Services',
+                            'hp_section_workforce'   => '👥 Workforce Solutions',
+                            'hp_section_ai'          => '🤖 AI Workforce Intelligence',
+                            'hp_section_process'     => '📋 Delivery Process',
+                            'hp_section_industries'  => '🏭 Industries',
+                            'hp_section_case_studies' => '⭐ Case Studies',
+                            'hp_section_why_choose'  => '✅ Why Choose SWAMITIME',
+                            'hp_section_blog'        => '📝 Blog & Insights',
+                            'hp_section_cta'         => '📢 Call to Action',
+                            'hp_section_faq'         => '❓ FAQ',
+                        ];
+                        foreach ($sections as $key => $label):
+                            $checked = ($settings[$key] ?? '1') === '1';
+                        ?>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" name="<?php echo $key; ?>" value="1" id="<?php echo $key; ?>" <?php echo $checked ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="<?php echo $key; ?>"><?php echo $label; ?></label>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="submit" class="btn btn-teal mt-3"><i class="bi bi-check-lg me-1"></i>Save Sections</button>
                 </form>
             </div>
         </div>

@@ -605,6 +605,11 @@
     .search-box {
         width: 180px;
     }
+
+    .table-responsive { -webkit-overflow-scrolling: touch; }
+    .container-fluid { padding-left: 16px; padding-right: 16px; }
+    .admin-page-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .admin-page-header .btn { width: 100%; }
 }
 
 @media (max-width: 575.98px) {

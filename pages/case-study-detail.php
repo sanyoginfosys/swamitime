@@ -82,7 +82,7 @@ $title = $caseStudy['title'] ?? 'Case Study';
         <div class="row g-5">
             <div class="col-lg-2">
                 <div class="metric-icon mx-auto mb-3" style="width: 72px; height: 72px;">
-                    <i class="bi <?php echo htmlspecialchars($caseStudy['icon'] ?? 'bi-briefcase', ENT_QUOTES, 'UTF-8'); ?>" style="font-size: 32px;"></i>
+                    <i class="<?php echo htmlspecialchars($caseStudy['icon'] ?? 'fa-solid fa-briefcase', ENT_QUOTES, 'UTF-8'); ?>" style="font-size: 32px;"></i>
                 </div>
             </div>
             <div class="col-lg-10">

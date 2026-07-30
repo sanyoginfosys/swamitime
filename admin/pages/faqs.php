@@ -124,7 +124,7 @@ if ($editId > 0) {
           <?php endif; ?>
           <?php foreach ($faqs as $faq): ?>
             <tr data-id="<?php echo (int) $faq['id']; ?>">
-              <td><i class="fa-solid fa-grip-vertical text-muted" style="cursor:grab;"></i></td>
+              <td><i class="bi bi-grip-vertical text-muted" style="cursor:grab;"></i></td>
               <td><?php echo (int) $faq['id']; ?></td>
               <td><strong><?php echo sanitize($faq['question']); ?></strong></td>
               <td>

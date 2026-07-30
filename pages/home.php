@@ -6,6 +6,19 @@
 $db = getDB();
 $hasDb = ($db !== null);
 
+$hpSections = [];
+try {
+    $rows = $db->query("SELECT setting_key, setting_value FROM site_settings WHERE setting_key LIKE 'hp_section_%'")->fetchAll();
+    foreach ($rows as $r) { $hpSections[$r['setting_key']] = $r['setting_value']; }
+} catch (Exception $e) {}
+
+function hp_enabled(string $section): bool
+{
+    global $hpSections;
+    $key = 'hp_section_' . $section;
+    return ($hpSections[$key] ?? '1') === '1';
+}
+
 // -----------------------------------------------------------
 // 1. Fetch Trust Metrics
 // -----------------------------------------------------------
@@ -16,14 +29,6 @@ if ($hasDb) {
     } catch (Exception $e) {
         $trustMetrics = [];
     }
-}
-if (empty($trustMetrics)) {
-    $trustMetrics = [
-        ['title' => 'Smarter Workforce Processes', 'value' => '100%', 'icon' => 'fa-solid fa-brain', 'description' => 'We deliver intelligent, automated workforce processes that eliminate manual inefficiencies and drive smarter decision-making across your organisation.'],
-        ['title' => 'Reduced Manual Admin', 'value' => '85%', 'icon' => 'fa-solid fa-clock', 'description' => 'Our solutions dramatically reduce manual administrative tasks, freeing your team to focus on strategic, value-adding activities that grow your business.'],
-        ['title' => 'Improved System Visibility', 'value' => '100%', 'icon' => 'fa-solid fa-eye', 'description' => 'Gain complete visibility across your workforce operations with real-time dashboards and comprehensive reporting capabilities tailored to your needs.'],
-        ['title' => 'Better Operational Control', 'value' => '100%', 'icon' => 'fa-solid fa-sliders', 'description' => 'Take full control of your operations with tools that give you precision management of scheduling, attendance, and labour costs.'],
-    ];
 }
 
 // -----------------------------------------------------------
@@ -37,19 +42,6 @@ if ($hasDb) {
         $services = [];
     }
 }
-if (empty($services)) {
-    $services = [
-        ['title' => 'UKG Workforce Management Support', 'icon' => 'bi-headset', 'slug' => 'ukg-workforce-management-support', 'short_description' => 'Expert support for UKG Pro and UKG Dimensions — time & attendance, scheduling, absence management, and reporting. Keep your workforce operations running smoothly with dedicated, specialist assistance.'],
-        ['title' => 'Workforce Management Consulting', 'icon' => 'bi-people', 'slug' => 'workforce-management-consulting', 'short_description' => 'Strategic workforce process review, operational improvement, and impartial system guidance to help you get the most from your workforce management investment.'],
-        ['title' => 'Implementation & Configuration', 'icon' => 'bi-gear', 'slug' => 'implementation-configuration-support', 'short_description' => 'Hands-on setup support, configuration planning, data migration, and go-live preparation for UKG and workforce management systems.'],
-        ['title' => 'Training & User Support', 'icon' => 'bi-person-workspace', 'slug' => 'training-user-support', 'short_description' => 'Practical, role-based training for managers, employees, and system administrators. Build confidence and capability across your organisation with tailored learning.'],
-        ['title' => 'Managed Support Services', 'icon' => 'bi-shield-check', 'slug' => 'managed-support-services', 'short_description' => 'Ongoing system support, regular health checks, issue investigation, and proactive maintenance to keep your workforce management solution in peak condition.'],
-        ['title' => 'Reporting & Data Support', 'icon' => 'bi-bar-chart', 'slug' => 'reporting-data-support', 'short_description' => 'Attendance, labour cost, overtime, and scheduling reports tailored to your business. Turn raw workforce data into actionable intelligence with custom dashboards.'],
-        ['title' => 'IT Consulting', 'icon' => 'bi-laptop', 'slug' => 'it-digital-solutions', 'short_description' => 'Practical IT strategy, cloud migration guidance, cybersecurity, and business automation advice to modernise your technology stack and improve operational efficiency.'],
-        ['title' => 'Web Development', 'icon' => 'bi-code-slash', 'slug' => 'web-development', 'short_description' => 'Custom websites, business portals, and digital platforms built with modern technologies. Responsive, accessible, and designed to support your business goals.'],
-        ['title' => 'SEO & Digital Marketing', 'icon' => 'bi-search', 'slug' => 'seo-digital-marketing', 'short_description' => 'Improve your search visibility, attract qualified B2B leads, and grow your digital presence with data-driven SEO and marketing strategies tailored for your sector.'],
-    ];
-}
 
 // -----------------------------------------------------------
 // 3. Fetch Industries
@@ -61,17 +53,6 @@ if ($hasDb) {
     } catch (Exception $e) {
         $industries = [];
     }
-}
-if (empty($industries)) {
-    $industries = [
-        ['title' => 'Retail', 'icon' => 'bi-shop', 'slug' => 'retail', 'short_description' => 'Workforce management solutions for high-street stores to nationwide chains, managing shift patterns and seasonal demand efficiently.'],
-        ['title' => 'Hospitality', 'icon' => 'bi-cup-hot', 'slug' => 'hospitality', 'short_description' => 'Optimised solutions for hotels, restaurants, and leisure businesses managing diverse rotas and peak-season staffing.'],
-        ['title' => 'Logistics & Distribution', 'icon' => 'bi-truck', 'slug' => 'logistics-distribution', 'short_description' => '24/7 shift planning, driver-hours compliance, and warehouse workforce management for logistics operations.'],
-        ['title' => 'Manufacturing', 'icon' => 'bi-gear-wide-connected', 'slug' => 'manufacturing', 'short_description' => 'Production-line staffing, skills-matrix management, and health & safety compliance for manufacturing operations.'],
-        ['title' => 'Healthcare & Care Services', 'icon' => 'bi-heart-pulse', 'slug' => 'healthcare-care-services', 'short_description' => 'Compliant workforce solutions for healthcare providers managing clinical rotas, qualifications, and regulatory requirements.'],
-        ['title' => 'Professional Services', 'icon' => 'bi-briefcase', 'slug' => 'professional-services', 'short_description' => 'Billable hours tracking, resource allocation, and utilisation monitoring for law firms, consultancies, and accounting practices.'],
-        ['title' => 'Small & Medium Businesses', 'icon' => 'bi-building', 'slug' => 'small-medium-businesses', 'short_description' => 'Scalable, affordable workforce solutions for growing SMEs needing enterprise-grade tools without the enterprise price tag.'],
-    ];
 }
 
 // -----------------------------------------------------------
@@ -98,31 +79,6 @@ if ($hasDb) {
         $caseStudies = [];
     }
 }
-if (empty($caseStudies)) {
-    $caseStudies = [
-        [
-            'title' => 'UKG Dimensions Implementation for National Retailer',
-            'slug' => 'confidential-client-retail-ukg-dimensions',
-            'industry' => 'Retail',
-            'challenge' => 'A leading UK retail chain with over 200 locations struggled with fragmented time and attendance systems, causing payroll errors and compliance risks.',
-            'result' => '<ul><li>35% reduction in payroll processing time</li><li>92% decrease in manual timesheet errors</li><li>&pound;1.2M annual savings</li></ul>',
-        ],
-        [
-            'title' => 'Managed Support Services for Logistics Provider',
-            'slug' => 'confidential-client-logistics-managed-support',
-            'industry' => 'Logistics & Distribution',
-            'challenge' => 'A UK logistics company operating 15 distribution centres struggled with ongoing UKG Pro WFM issues and lacked specialist in-house expertise.',
-            'result' => '<ul><li>99.8% system uptime achieved</li><li>60% reduction in support costs</li><li>Resolution time reduced from 48h to 4h</li></ul>',
-        ],
-        [
-            'title' => 'Workforce Analytics Transformation for Healthcare Provider',
-            'slug' => 'confidential-client-healthcare-analytics',
-            'industry' => 'Healthcare & Care Services',
-            'challenge' => 'A private healthcare group operating 12 care homes and 3 hospitals lacked consolidated visibility of workforce costs and agency spend.',
-            'result' => '<ul><li>28% reduction in agency staff spend</li><li>Real-time labour cost visibility across 15 sites</li><li>ROI achieved within 6 months</li></ul>',
-        ],
-    ];
-}
 
 // -----------------------------------------------------------
 // 5. Fetch Blog Posts
@@ -135,13 +91,6 @@ if ($hasDb) {
         $blogPosts = [];
     }
 }
-if (empty($blogPosts)) {
-    $blogPosts = [
-        ['title' => 'The Future of Workforce Management: Trends Shaping 2026 and Beyond', 'slug' => 'future-workforce-management-trends-2026', 'excerpt' => 'Explore the key trends transforming workforce management in 2026, from AI-powered scheduling to predictive analytics and employee experience platforms.', 'category_name' => 'Workforce Management', 'published_at' => '2026-01-15 09:00:00', 'author' => 'SWAMITIME SOLUTIONS LTD'],
-        ['title' => 'Maximising ROI from Your UKG Dimensions Investment', 'slug' => 'maximising-roi-ukg-dimensions-investment', 'excerpt' => 'Practical strategies for getting the most value from UKG Dimensions — learn how to optimise configuration, user adoption, and reporting.', 'category_name' => 'UKG Support', 'published_at' => '2026-02-10 09:00:00', 'author' => 'SWAMITIME SOLUTIONS LTD'],
-        ['title' => 'How AI is Transforming HR Technology in 2026', 'slug' => 'ai-transforming-hr-technology-2026', 'excerpt' => 'Artificial intelligence is revolutionising HR technology. Discover how AI-powered tools are improving recruitment, engagement, and workforce planning.', 'category_name' => 'HR Technology', 'published_at' => '2026-03-05 09:00:00', 'author' => 'SWAMITIME SOLUTIONS LTD'],
-    ];
-}
 
 // -----------------------------------------------------------
 // 6. Fetch FAQs
@@ -153,16 +102,6 @@ if ($hasDb) {
     } catch (Exception $e) {
         $faqs = [];
     }
-}
-if (empty($faqs)) {
-    $faqs = [
-        ['question' => 'What is UKG and how can it benefit my business?', 'answer' => 'UKG (Ultimate Kronos Group) is a leading provider of workforce management and human capital management solutions. UKG Pro and UKG Dimensions help businesses manage time and attendance, scheduling, absence management, HR, payroll, and workforce analytics. Benefits include reduced administrative costs, improved compliance, better workforce visibility, and enhanced employee experience.'],
-        ['question' => 'What workforce management services does SWAMITIME SOLUTIONS LTD offer?', 'answer' => 'We offer a comprehensive suite of workforce management services including UKG support, workforce management consulting, implementation and configuration, training and user support, managed support services, and reporting and data support. We also provide IT consulting, web development, and SEO services.'],
-        ['question' => 'Do you provide ongoing support after UKG implementation?', 'answer' => 'Yes, absolutely. We offer Managed Support Services that provide continuous, 24/7 support for your UKG environment. This includes proactive monitoring, incident resolution, system health checks, upgrades, and performance optimisation. We can also provide ad-hoc support on a retainer or project basis.'],
-        ['question' => 'How long does a typical UKG implementation take?', 'answer' => 'Implementation timelines vary based on the size of your organisation, the complexity of your requirements, and the modules being deployed. A typical mid-market implementation can take 8-16 weeks. We follow a structured methodology including discovery, design, configuration, testing, training, and go-live to ensure a smooth deployment.'],
-        ['question' => 'What industries do you specialise in?', 'answer' => 'We specialise in Retail, Hospitality, Logistics & Distribution, Manufacturing, Healthcare & Care Services, Professional Services, and Small & Medium Businesses. Our consultants have deep industry knowledge and understand the unique workforce challenges each sector faces.'],
-        ['question' => 'How do I get started with SWAMITIME SOLUTIONS LTD?', 'answer' => 'Simply contact us via our website enquiry form, email us at admin@swamitime.com, or call our office. We will arrange an initial consultation to understand your needs, discuss potential solutions, and provide a tailored proposal. There is no obligation, and initial consultations are free.'],
-    ];
 }
 
 // -----------------------------------------------------------
@@ -183,6 +122,7 @@ if ($hasDb) {
 <!-- ============================================================ -->
 <!-- SECTION 1: HERO -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('hero')): ?>
 <section class="hero-section ai-pattern">
     <div class="container">
         <div class="row align-items-center g-5">
@@ -264,10 +204,12 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- SECTION 2: TRUST METRICS -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('metrics') && !empty($trustMetrics)): ?>
 <section class="section bg-light">
     <div class="container">
         <div class="section-header">
@@ -281,20 +223,7 @@ if ($hasDb) {
             <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="<?php echo ($metric['sort_order'] ?? 0) * 100; ?>">
                 <div class="metric-card">
                     <div class="metric-icon">
-                        <i class="bi <?php
-                            $iconMap = [
-                                'fa-solid fa-brain' => 'bi-cpu',
-                                'fa-solid fa-clock' => 'bi-clock-history',
-                                'fa-solid fa-eye' => 'bi-eye',
-                                'fa-solid fa-sliders' => 'bi-sliders2',
-                            ];
-                            $iconClass = $metric['icon'] ?? 'bi-check-circle';
-                            if (str_contains($iconClass, 'brain')) echo 'bi-cpu';
-                            elseif (str_contains($iconClass, 'clock')) echo 'bi-clock-history';
-                            elseif (str_contains($iconClass, 'eye')) echo 'bi-eye';
-                            elseif (str_contains($iconClass, 'slider')) echo 'bi-sliders2';
-                            else echo 'bi-check-circle';
-                        ?>"></i>
+                        <i class="<?php echo htmlspecialchars($metric['icon'] ?? 'fa-solid fa-check-circle'); ?>"></i>
                     </div>
                     <div class="metric-number">
                         <?php echo htmlspecialchars($metric['value'] ?? '—'); ?>
@@ -307,10 +236,12 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- SECTION 3: SERVICE PILLARS -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('services') && !empty($services)): ?>
 <section class="section">
     <div class="container">
         <div class="section-header">
@@ -327,7 +258,7 @@ if ($hasDb) {
                     <span class="featured-badge">Most Popular</span>
                     <?php endif; ?>
                     <div class="service-card-icon">
-                        <i class="bi <?php echo htmlspecialchars($service['icon'] ?? 'bi-check-circle'); ?>"></i>
+                        <i class="<?php echo htmlspecialchars($service['icon'] ?? 'fa-solid fa-check-circle'); ?>"></i>
                     </div>
                     <h3><?php echo htmlspecialchars($service['title'] ?? ''); ?></h3>
                     <p><?php echo htmlspecialchars($service['short_description'] ?? ($service['description'] ?? '')); ?></p>
@@ -338,10 +269,12 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- SECTION 4: WORKFORCE SOLUTION OVERVIEW -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('workforce')): ?>
 <section class="section bg-light">
     <div class="container">
         <div class="row g-5 align-items-center">
@@ -451,10 +384,12 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- SECTION 5: AI-POWERED DIGITAL OPERATIONS -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('ai')): ?>
 <section class="section bg-dark">
     <div class="container">
         <div class="section-header">
@@ -498,10 +433,12 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- SECTION 6: PROCESS TIMELINE -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('process')): ?>
 <section class="section">
     <div class="container">
         <div class="section-header">
@@ -542,10 +479,12 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- SECTION 7: INDUSTRIES SERVED -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('industries') && !empty($industries)): ?>
 <section class="section bg-light">
     <div class="container">
         <div class="section-header">
@@ -559,7 +498,7 @@ if ($hasDb) {
             <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="<?php echo ($index % 4) * 100; ?>">
                 <div class="industry-card">
                     <div class="icon-circle">
-                        <i class="bi <?php echo htmlspecialchars($industry['icon'] ?? 'bi-building'); ?>"></i>
+                        <i class="<?php echo htmlspecialchars($industry['icon'] ?? 'fa-solid fa-building'); ?>"></i>
                     </div>
                     <h4><?php echo htmlspecialchars($industry['title'] ?? ''); ?></h4>
                     <p><?php echo htmlspecialchars($industry['short_description'] ?? ''); ?></p>
@@ -573,10 +512,12 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- SECTION 8: CASE STUDY PREVIEW -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('case_studies') && !empty($caseStudies)): ?>
 <section class="section">
     <div class="container">
         <div class="section-header">
@@ -615,10 +556,12 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- SECTION 9: WHY CHOOSE SWAMITIME -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('why_choose')): ?>
 <section class="section bg-light">
     <div class="container">
         <div class="section-header">
@@ -712,10 +655,12 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- SECTION 10: BLOG PREVIEW -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('blog') && !empty($blogPosts)): ?>
 <section class="section">
     <div class="container">
         <div class="section-header">
@@ -750,10 +695,12 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- SECTION 11: HIGH-CONVERSION CTA -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('cta')): ?>
 <section class="cta-section">
     <div class="container">
         <h2><?php echo htmlspecialchars($ctaBlock['title'] ?? 'Ready to Transform Your Workforce Management?'); ?></h2>
@@ -769,10 +716,12 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- SECTION 12: FAQ ACCORDION -->
 <!-- ============================================================ -->
+<?php if (hp_enabled('faq') && !empty($faqs)): ?>
 <section class="section faq-section">
     <div class="container">
         <div class="section-header">
@@ -807,6 +756,7 @@ if ($hasDb) {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================ -->
 <!-- Scroll-triggered timeline progress -->

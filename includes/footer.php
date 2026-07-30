@@ -8,8 +8,12 @@
                 <!-- Column 1: Company -->
                 <div class="col-lg-3 col-md-6">
                     <div class="footer-brand mb-3">
+                        <?php if (!empty($siteLogo)): ?>
+                        <img src="<?php echo BASE_URL . '/' . ltrim($siteLogo, '/'); ?>" alt="SWAMITIME SOLUTIONS LTD" style="height:32px;filter:brightness(10);">
+                        <?php else: ?>
                         <strong style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; letter-spacing: 1px; color: #ffffff;">SWAMITIME</strong>
                         <small class="d-block" style="font-size: 0.6rem; letter-spacing: 3px; opacity: 0.7; color: #ffffff;">SOLUTIONS LTD</small>
+                        <?php endif; ?>
                     </div>
                     <p class="footer-desc">
                         Expert workforce management and digital solutions consultancy. UKG implementation partners delivering operational excellence across industries.
@@ -24,69 +28,79 @@
                     </div>
                 </div>
 
-                <!-- Column 2: Quick Links -->
-                <div class="col-lg-2 col-md-6">
-                    <h6 class="footer-heading">Quick Links</h6>
+                <?php
+                // Fetch dynamic footer links grouped by section
+                $footerSections = [];
+                try {
+                    $db = getDB();
+                    $fLinks = $db->query("SELECT * FROM footer_links WHERE status = 'active' ORDER BY section, sort_order ASC")->fetchAll();
+                    // Group by section
+                    foreach ($fLinks as $link) {
+                        $sec = $link['section'] ?? 'quick_links';
+                        $footerSections[$sec][] = $link;
+                    }
+                } catch (Exception $e) {}
+                // Column mapping: section key => column width, display name
+                $footerColumns = [
+                    'quick_links' => ['width' => 'col-lg-2 col-md-6', 'label' => 'Quick Links'],
+                    'services'    => ['width' => 'col-lg-3 col-md-6', 'label' => 'Our Services'],
+                    'ukg'         => ['width' => 'col-lg-2 col-md-6', 'label' => 'UKG Support'],
+                    'legal'       => ['width' => 'col-lg-2 col-md-6', 'label' => 'Legal'],
+                ];
+                // Render only sections that have links
+                foreach ($footerColumns as $secKey => $colMeta):
+                    if (empty($footerSections[$secKey])) continue;
+                ?>
+                <div class="<?php echo $colMeta['width']; ?>">
+                    <h6 class="footer-heading"><?php echo $colMeta['label']; ?></h6>
                     <ul class="footer-links">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/about-us">About Us</a></li>
-                        <li><a href="/contact-us">Contact</a></li>
-                        <li><a href="/blog">Blog</a></li>
-                        <li><a href="/case-studies">Case Studies</a></li>
-                        <li><a href="/industries">Industries</a></li>
+                        <?php foreach ($footerSections[$secKey] as $link): ?>
+                        <li><a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>"><?php echo htmlspecialchars($link['title'] ?? ''); ?></a></li>
+                        <?php endforeach; ?>
                     </ul>
                 </div>
-
-                <!-- Column 3: Services -->
-                <div class="col-lg-3 col-md-6">
-                    <h6 class="footer-heading">Our Services</h6>
-                    <ul class="footer-links">
-                        <li><a href="/ukg-workforce-management-support">UKG Workforce Support</a></li>
-                        <li><a href="/workforce-management-consulting">Workforce Consulting</a></li>
-                        <li><a href="/implementation-configuration-support">Implementation & Configuration</a></li>
-                        <li><a href="/training-user-support">Training & User Support</a></li>
-                        <li><a href="/managed-support-services">Managed Support Services</a></li>
-                        <li><a href="/reporting-data-support">Reporting & Data Support</a></li>
-                        <li><a href="/it-digital-solutions">IT & Digital Solutions</a></li>
-                        <li><a href="/web-development">Web Development</a></li>
-                        <li><a href="/seo-digital-marketing">SEO & Digital Marketing</a></li>
-                    </ul>
-                </div>
-
-                <!-- Column 4: UKG Support + IT Solutions -->
-                <div class="col-lg-2 col-md-6">
-                    <h6 class="footer-heading">UKG Support</h6>
-                    <ul class="footer-links">
-                        <li><a href="/ukg-workforce-management-support">UKG Pro WFM</a></li>
-                        <li><a href="/ukg-workforce-management-support">UKG Dimensions</a></li>
-                        <li><a href="/ukg-workforce-management-support">UKG Ready</a></li>
-                        <li><a href="/ukg-workforce-management-support">UKG TeleStaff</a></li>
-                    </ul>
-                    <h6 class="footer-heading mt-3">IT Solutions</h6>
-                    <ul class="footer-links">
-                        <li><a href="/it-digital-solutions">Digital Transformation</a></li>
-                        <li><a href="/web-development">Web Development</a></li>
-                        <li><a href="/seo-digital-marketing">SEO & Marketing</a></li>
-                    </ul>
-                </div>
+                <?php endforeach; ?>
 
                 <!-- Column 5: Contact + Newsletter -->
                 <div class="col-lg-2 col-md-6">
+                    <?php
+                    $footerEmail   = '';
+                    $footerPhone   = '';
+                    $footerAddress = '';
+                    try {
+                        $db = getDB();
+                        $rows = $db->query("SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ('site_email','site_phone','site_address')")->fetchAll();
+                        foreach ($rows as $r) {
+                            if ($r['setting_key'] === 'site_email')   $footerEmail   = $r['setting_value'];
+                            if ($r['setting_key'] === 'site_phone')   $footerPhone   = $r['setting_value'];
+                            if ($r['setting_key'] === 'site_address') $footerAddress = $r['setting_value'];
+                        }
+                    } catch (Exception $e) {}
+                    $hasContact = $footerEmail || $footerPhone || $footerAddress;
+                    if ($hasContact):
+                    ?>
                     <h6 class="footer-heading">Get in Touch</h6>
                     <ul class="footer-contact">
+                        <?php if ($footerEmail): ?>
                         <li>
                             <i class="bi bi-envelope-fill"></i>
-                            <a href="mailto:hello@swamitime.com">hello@swamitime.com</a>
+                            <a href="mailto:<?php echo htmlspecialchars($footerEmail); ?>"><?php echo htmlspecialchars($footerEmail); ?></a>
                         </li>
+                        <?php endif; ?>
+                        <?php if ($footerPhone): ?>
                         <li>
                             <i class="bi bi-telephone-fill"></i>
-                            <a href="tel:+440000000000">+44 (0) 000 000 0000</a>
+                            <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^\d+]/', '', $footerPhone)); ?>"><?php echo htmlspecialchars($footerPhone); ?></a>
                         </li>
+                        <?php endif; ?>
+                        <?php if ($footerAddress): ?>
                         <li>
                             <i class="bi bi-geo-alt-fill"></i>
-                            <span>London, United Kingdom</span>
+                            <span><?php echo htmlspecialchars($footerAddress); ?></span>
                         </li>
+                        <?php endif; ?>
                     </ul>
+                    <?php endif; ?>
                     <h6 class="footer-heading mt-3">Newsletter</h6>
                     <form class="newsletter-form mt-2" action="/subscribe" method="post">
                         <div class="input-group input-group-sm">
@@ -330,6 +344,10 @@
     }
 </style>
 
+<script>
+    // Hide preloader
+    (function(){var p=document.getElementById('preloader');if(!p)return;function h(){setTimeout(function(){p.classList.add('fade-out')},200)}if(document.readyState==='complete')h();else window.addEventListener('load',h)})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
 <script src="/assets/js/main.js" defer></script>

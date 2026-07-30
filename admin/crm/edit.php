@@ -13,7 +13,7 @@ if ($editId) {
     $stmt = $db->prepare("SELECT * FROM crm_leads WHERE id = ?");
     $stmt->execute([$editId]);
     $lead = $stmt->fetch();
-    if (!$lead) { set_flash('error', 'Lead not found.'); redirect(admin_url('crm/')); }
+    if (!$lead) { set_flash('error', 'Lead not found.'); redirect(admin_url('crm-leads.php')); }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

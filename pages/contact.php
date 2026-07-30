@@ -11,6 +11,20 @@ try {
 }
 $title = $pageData['title'] ?? 'Contact Us';
 $csrf_token = generate_csrf_token();
+
+$contactEmail   = '';
+$contactPhone   = '';
+$contactAddress = '';
+$contactHours   = '';
+try {
+    $rows = $db->query("SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ('site_email','site_phone','site_address','working_hours')")->fetchAll();
+    foreach ($rows as $r) {
+        if ($r['setting_key'] === 'site_email')     $contactEmail   = $r['setting_value'];
+        if ($r['setting_key'] === 'site_phone')     $contactPhone   = $r['setting_value'];
+        if ($r['setting_key'] === 'site_address')   $contactAddress = $r['setting_value'];
+        if ($r['setting_key'] === 'working_hours')  $contactHours   = $r['setting_value'];
+    }
+} catch (Exception $e) {}
 ?>
 <!-- Page Header -->
 <section class="page-header">
@@ -136,47 +150,57 @@ $csrf_token = generate_csrf_token();
             </div>
             <div class="col-lg-5">
                 <div class="row g-4">
+                    <?php if ($contactEmail): ?>
                     <div class="col-12">
                         <div class="contact-info-card" data-aos="fade-left">
                             <div class="info-icon"><i class="bi bi-envelope"></i></div>
                             <h4>Email</h4>
-                            <p><a href="mailto:hello@swamitime.com" class="contact-link">hello@swamitime.com</a></p>
+                            <p><a href="mailto:<?php echo htmlspecialchars($contactEmail); ?>" class="contact-link"><?php echo htmlspecialchars($contactEmail); ?></a></p>
                             <p class="small mt-1">We aim to respond to all enquiries within one business day.</p>
                         </div>
                     </div>
+                    <?php endif; ?>
+                    <?php if ($contactPhone): ?>
                     <div class="col-12">
                         <div class="contact-info-card" data-aos="fade-left" data-aos-delay="100">
                             <div class="info-icon"><i class="bi bi-telephone"></i></div>
                             <h4>Phone</h4>
-                            <p><a href="tel:+440000000000" class="contact-link">+44 (0) 000 000 0000</a></p>
+                            <p><a href="tel:<?php echo htmlspecialchars(preg_replace('/[^\d+]/', '', $contactPhone)); ?>" class="contact-link"><?php echo htmlspecialchars($contactPhone); ?></a></p>
                             <p class="small mt-1">Available Monday to Friday, 9:00 AM &ndash; 5:30 PM (GMT).</p>
                         </div>
                     </div>
+                    <?php endif; ?>
+                    <?php if ($contactAddress): ?>
                     <div class="col-12">
                         <div class="contact-info-card" data-aos="fade-left" data-aos-delay="200">
                             <div class="info-icon"><i class="bi bi-geo-alt"></i></div>
                             <h4>Location</h4>
-                            <p>London, United Kingdom</p>
+                            <p><?php echo htmlspecialchars($contactAddress); ?></p>
                             <p class="small mt-1">We serve clients across England, Scotland, Wales, and Northern Ireland, with remote and on-site delivery options available.</p>
                         </div>
                     </div>
+                    <?php endif; ?>
+                    <?php if ($contactHours): ?>
                     <div class="col-12">
                         <div class="contact-info-card" data-aos="fade-left" data-aos-delay="300">
                             <div class="info-icon"><i class="bi bi-clock"></i></div>
                             <h4>Working Hours</h4>
-                            <p>Monday &ndash; Friday: 9:00 AM &ndash; 5:30 PM</p>
+                            <p><?php echo htmlspecialchars($contactHours); ?></p>
                             <p class="small mt-1">Out-of-hours support available for managed service clients under agreed service level agreements (SLAs).</p>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
                 <div class="mt-4">
+                    <?php if ($contactAddress): ?>
                     <div class="contact-map" style="background: var(--gradient); min-height: 250px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.95rem; text-align: center; padding: 2rem;">
                         <div>
                             <i class="bi bi-geo-alt-fill" style="font-size: 2.5rem; display: block; margin-bottom: 0.75rem; opacity: 0.8;"></i>
-                            <strong>London, United Kingdom</strong><br>
+                            <strong><?php echo htmlspecialchars($contactAddress); ?></strong><br>
                             <span style="opacity: 0.8; font-size: 0.85rem;">Serving clients nationwide</span>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -184,14 +208,16 @@ $csrf_token = generate_csrf_token();
 </section>
 
 <!-- CTA -->
+<?php if ($contactPhone): ?>
 <section class="cta-section">
     <div class="container">
         <h2>Prefer a Direct Call?</h2>
         <p>Schedule a free 30-minute consultation at a time that suits you. We will listen to your challenges and provide initial guidance with no obligation.</p>
-        <a href="tel:+440000000000" class="btn-white">Call Us Now <i class="bi bi-telephone-fill"></i></a>
+        <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^\d+]/', '', $contactPhone)); ?>" class="btn-white">Call Us Now <i class="bi bi-telephone-fill"></i></a>
         <div class="cta-trust">Free initial consultation &bull; No commitment &bull; Expert advice</div>
     </div>
 </section>
+<?php endif; ?>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -243,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(function () {
             msgDiv.classList.remove('d-none');
             msgDiv.classList.add('alert', 'alert-danger');
-            msgDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>Network error. Please try again or email us directly at hello@swamitime.com.';
+            msgDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>Network error. Please try again<?php if ($contactEmail): ?> or email us at <?php echo htmlspecialchars($contactEmail); ?><?php endif; ?>.';
         })
         .finally(function () {
             btn.disabled = false;

@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $db->prepare("UPDATE blog_posts SET status = ?, published_at = CASE WHEN ?='published' AND published_at IS NULL THEN NOW() ELSE published_at END WHERE id = ?")->execute([$newStatus, $newStatus, $postId]);
         set_flash('success', 'Post status updated.');
     }
-    redirect(admin_url('blog/'));
+    redirect(admin_url('blog-posts.php'));
 }
 
 $countStmt = $db->prepare("SELECT COUNT(*) FROM blog_posts p $whereClause");
@@ -162,7 +162,7 @@ if (isset($_GET['delete']) && isset($_GET['csrf'])) {
         $delId = (int)$_GET['delete'];
         $db->prepare("DELETE FROM blog_posts WHERE id = ?")->execute([$delId]);
         set_flash('success', 'Post deleted.');
-        redirect(admin_url('blog/'));
+        redirect(admin_url('blog-posts.php'));
     }
 }
 require_once __DIR__ . '/../includes/footer.php'; ?>

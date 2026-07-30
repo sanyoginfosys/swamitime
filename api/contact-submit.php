@@ -82,8 +82,14 @@ try {
     $stmt = $db->prepare("INSERT INTO crm_leads (full_name, company_name, email, phone, service_interested, message, lead_source, lead_status, priority, enquiry_id, created_at) VALUES (?, ?, ?, ?, ?, ?, 'contact_form', 'new', 'medium', ?, NOW())");
     $stmt->execute([$full_name, $company_name, $email, $phone, $service_required, $message, $enquiry_id]);
     
-    // Send email notification to admin (attempt, don't fail if email not configured)
-    $admin_email = 'admin@swamitime.com';
+    // Send email notification to admin
+    $admin_email = '';
+    try {
+        $stmt = $db->prepare("SELECT setting_value FROM site_settings WHERE setting_key = 'site_email' LIMIT 1");
+        $stmt->execute();
+        $admin_email = $stmt->fetchColumn() ?: '';
+    } catch (Exception $e) {}
+    if (empty($admin_email)) $admin_email = 'admin@swamitime.com';
     $site_name = defined('SITE_NAME') ? SITE_NAME : 'SWAMITIME SOLUTIONS LTD';
     
     $email_subject = "New Enquiry from $full_name - $site_name";

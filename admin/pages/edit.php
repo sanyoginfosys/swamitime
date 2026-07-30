@@ -29,7 +29,7 @@ if (!$isNew) {
         $pageData = $row;
     } else {
         set_flash('error', 'Page not found.');
-        redirect(admin_url('pages/'));
+        redirect(admin_url('pages.php'));
     }
 }
 

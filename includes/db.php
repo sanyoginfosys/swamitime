@@ -384,16 +384,11 @@ class Database
         $stmt = $this->pdo->prepare("INSERT OR IGNORE INTO footer_links (id, title, url, section, sort_order, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)");
         foreach ($footerLinks as $fl) { $stmt->execute([$fl[0], $fl[1], $fl[2], $fl[3], $fl[4], $fl[5], $now]); }
 
-        // Seed site settings
+        // Seed site settings — only essential ones
         $settings = [
             ['site_name', 'SWAMITIME SOLUTIONS LTD'],
             ['site_tagline', 'Premium B2B Technology Consulting'],
             ['site_description', 'Premium workforce management, UKG support, IT consulting, web development, and SEO services.'],
-            ['site_email', 'admin@swamitime.com'],
-            ['site_phone', '+44 (0) 20 1234 5678'],
-            ['site_address', 'London, United Kingdom'],
-            ['working_hours', 'Monday - Friday: 9:00 AM - 6:00 PM'],
-            ['office_location', 'London, UK'],
             ['social_linkedin', 'https://www.linkedin.com/company/swamitime-solutions-ltd'],
             ['social_twitter', 'https://twitter.com/swamitime'],
             ['social_facebook', 'https://www.facebook.com/swamitime'],

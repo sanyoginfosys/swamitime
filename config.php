@@ -28,6 +28,9 @@ if (isset($_SERVER['HTTP_HOST'])) {
     define('BASE_URL', 'http://localhost');
 }
 
+// GZIP compression for faster page loads
+if (!ob_start('ob_gzhandler')) { ob_start(); }
+
 define('BASE_PATH', __DIR__);
 define('ADMIN_EMAIL', 'admin@swamitime.com');
 
