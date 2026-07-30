@@ -31,16 +31,6 @@ $title = $pageData['title'] ?? 'About SWAMITIME SOLUTIONS LTD';
     </div>
 </section>
 
-<?php if (!empty($pageData['content'])): ?>
-<section class="section">
-    <div class="container">
-        <div class="content-section">
-            <?php echo $pageData['content']; ?>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
-
 <!-- Who We Are -->
 <section class="section">
     <div class="container">
