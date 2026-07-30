@@ -24,8 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $model = sanitize($_POST['model_name'] ?? '');
         $temp = (float)($_POST['temperature'] ?? 0.7);
         $maxTokens = (int)($_POST['max_tokens'] ?? 2000);
-        $db->prepare("UPDATE ai_settings SET api_provider=?, api_key=?, model_name=?, temperature=?, max_tokens=?, updated_at=NOW() WHERE id=1")
-            ->execute([$provider, $apiKey, $model, $temp, $maxTokens]);
+        // Upsert: insert if no row exists, update if it does
+        $existing = $db->query("SELECT id FROM ai_settings WHERE id = 1")->fetchColumn();
+        if ($existing) {
+            $db->prepare("UPDATE ai_settings SET api_provider=?, api_key=?, model_name=?, temperature=?, max_tokens=?, updated_at=NOW() WHERE id=1")
+                ->execute([$provider, $apiKey, $model, $temp, $maxTokens]);
+        } else {
+            $db->prepare("INSERT INTO ai_settings (id, api_provider, api_key, model_name, temperature, max_tokens, is_active, created_at) VALUES (1, ?, ?, ?, ?, ?, 1, NOW())")
+                ->execute([$provider, $apiKey, $model, $temp, $maxTokens]);
+        }
         set_flash('success', 'AI configuration saved.');
         redirect(admin_url('seo-tools.php'));
     }
