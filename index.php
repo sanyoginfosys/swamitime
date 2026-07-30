@@ -23,38 +23,35 @@ $routes = [
     '/home' => 'pages/home.php',
     '/about-us' => 'pages/about.php',
     '/services' => 'pages/services.php',
-    '/ukg-workforce-management-support' => 'pages/ukg-support.php',
-    '/workforce-management-consulting' => 'pages/workforce-consulting.php',
-    '/implementation-configuration-support' => 'pages/implementation.php',
-    '/training-user-support' => 'pages/training.php',
-    '/managed-support-services' => 'pages/managed-support.php',
-    '/reporting-data-support' => 'pages/reporting.php',
-    '/it-digital-solutions' => 'pages/it-solutions.php',
-    '/web-development' => 'pages/web-development.php',
-    '/seo-digital-marketing' => 'pages/seo-marketing.php',
     '/industries' => 'pages/industries.php',
-    '/industries/retail' => 'pages/industry-detail.php',
-    '/industries/hospitality' => 'pages/industry-detail.php',
-    '/industries/logistics-distribution' => 'pages/industry-detail.php',
-    '/industries/manufacturing' => 'pages/industry-detail.php',
-    '/industries/healthcare-care-services' => 'pages/industry-detail.php',
-    '/industries/professional-services' => 'pages/industry-detail.php',
-    '/industries/small-medium-businesses' => 'pages/industry-detail.php',
     '/case-studies' => 'pages/case-studies.php',
-    '/case-studies/' => 'pages/case-study-detail.php',
     '/blog' => 'pages/blog.php',
-    '/blog/' => 'pages/blog-post.php',
     '/contact-us' => 'pages/contact.php',
-    '/privacy-policy' => 'pages/privacy.php',
-    '/terms-conditions' => 'pages/terms.php',
-    '/cookie-policy' => 'pages/cookie.php',
-    '/gdpr-compliance' => 'pages/gdpr.php',
+    // All content pages use generic template from pages table
+    '/ukg-workforce-management-support' => 'pages/page.php',
+    '/workforce-management-consulting'  => 'pages/page.php',
+    '/implementation-configuration-support' => 'pages/page.php',
+    '/training-user-support' => 'pages/page.php',
+    '/managed-support-services' => 'pages/page.php',
+    '/reporting-data-support' => 'pages/page.php',
+    '/it-digital-solutions' => 'pages/page.php',
+    '/web-development' => 'pages/page.php',
+    '/seo-digital-marketing' => 'pages/page.php',
+    '/privacy-policy' => 'pages/page.php',
+    '/terms-conditions' => 'pages/page.php',
+    '/cookie-policy' => 'pages/page.php',
+    '/gdpr-compliance' => 'pages/page.php',
 ];
 
 // Check for case study detail pages
 if (preg_match('#^/case-studies/([a-zA-Z0-9\-]+)$#', $request_uri, $matches)) {
     $_GET['slug'] = $matches[1];
     $template = 'pages/case-study-detail.php';
+}
+// Check for industry detail pages
+elseif (preg_match('#^/industries/([a-zA-Z0-9\-]+)$#', $request_uri, $matches)) {
+    $_GET['slug'] = $matches[1];
+    $template = 'pages/industry-detail.php';
 }
 // Check for blog post detail pages
 elseif (preg_match('#^/blog/([a-zA-Z0-9\-]+)$#', $request_uri, $matches)) {
